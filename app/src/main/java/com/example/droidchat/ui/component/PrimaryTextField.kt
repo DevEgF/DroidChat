@@ -89,7 +89,8 @@ fun PrimaryTextField(
                 unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                 focusedContainerColor = MaterialTheme.colorScheme.surface,
                 disabledContainerColor = MaterialTheme.colorScheme.surface,
-                unfocusedBorderColor = if(errorMessage != null) ColorError else MaterialTheme.colorScheme.onSurfaceVariant,
+                unfocusedBorderColor = if(errorMessage != null) ColorError
+                else MaterialTheme.colorScheme.onSurfaceVariant,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
             )
         )

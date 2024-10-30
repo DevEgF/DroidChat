@@ -22,6 +22,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.droidchat.R
+import com.example.droidchat.ui.component.PrimaryButton
 import com.example.droidchat.ui.component.PrimaryTextField
 import com.example.droidchat.ui.theme.BackgroundGradient
 
@@ -80,6 +81,21 @@ fun SignScreen() {
             leadingIcon = R.drawable.ic_lock,
             keyboardType = KeyboardType.Password,
             imeAction = ImeAction.Done
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        var isLoading by remember {
+            mutableStateOf(false)
+        }
+
+        PrimaryButton(
+            text = stringResource(R.string.feature_login_button),
+            modifier = Modifier.padding(horizontal = 16.dp),
+            onClick = {
+                isLoading = !isLoading
+            },
+            isLoading = isLoading
         )
     }
 }
