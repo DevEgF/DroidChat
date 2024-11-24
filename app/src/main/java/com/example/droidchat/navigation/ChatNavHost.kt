@@ -28,7 +28,11 @@ fun ChatNavHost() {
             )
         }
         composable<SignInRoute> {
-            SignInRoute()
+            SignInRoute(
+                navigateToSignUp = {
+                    navController.navigate(SignUpRoute)
+                }
+            )
         }
         composable<SignUpRoute> {
 

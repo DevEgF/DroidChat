@@ -31,8 +31,8 @@ import com.example.droidchat.ui.theme.DroidChatTheme
 
 @Composable
 fun PrimaryTextField(
-    value: String,
     onValueChange: (String) -> Unit,
+    value: String,
     modifier: Modifier = Modifier,
     @DrawableRes
     leadingIcon: Int? = null,
@@ -86,9 +86,9 @@ fun PrimaryTextField(
             } else VisualTransformation.None,
             shape = CircleShape,
             colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                disabledContainerColor = MaterialTheme.colorScheme.surface,
+                unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                focusedContainerColor = MaterialTheme.colorScheme.onPrimary,
+                disabledContainerColor = MaterialTheme.colorScheme.onPrimary,
                 unfocusedBorderColor = if(errorMessage != null) ColorError
                 else MaterialTheme.colorScheme.onSurfaceVariant,
                 focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -100,7 +100,8 @@ fun PrimaryTextField(
                 text = text,
                 modifier = Modifier
                     .padding(start = 16.dp, top = 4.dp),
-                color = ColorError
+                color = ColorError,
+                style = MaterialTheme.typography.labelMedium
             )
         }
     }
@@ -116,6 +117,21 @@ private fun PrimaryTextFieldPreview() {
             placeholder = "Email",
             leadingIcon = R.drawable.ic_envelope,
             keyboardType = KeyboardType.Email,
+        )
+    }
+}
+
+@Preview
+@Composable
+private fun PrimaryTextFieldErrorPreview() {
+    DroidChatTheme {
+        PrimaryTextField(
+            value = "",
+            onValueChange = {},
+            placeholder = "Email",
+            leadingIcon = R.drawable.ic_envelope,
+            keyboardType = KeyboardType.Email,
+            errorMessage = "Email is invalid"
         )
     }
 }

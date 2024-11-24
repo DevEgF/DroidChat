@@ -1,5 +1,6 @@
 package com.example.droidchat.ui.feature.signin
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,35 +9,57 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.droidchat.R
 import com.example.droidchat.ui.component.PrimaryButton
 import com.example.droidchat.ui.component.PrimaryTextField
+import com.example.droidchat.ui.feature.signin.event.SignInFormEvent
+import com.example.droidchat.ui.feature.signin.state.SignInFormState
+import com.example.droidchat.ui.feature.signin.viewmodel.SignInViewModel
 import com.example.droidchat.ui.theme.BackgroundGradient
 
 @Composable
-fun SignInRoute() {
-    SignScreen()
+fun SignInRoute(
+    viewModel: SignInViewModel = viewModel(),
+    navigateToSignUp: () -> Unit
+) {
+    val formState = viewModel.formState
+    SignScreen(
+        formState = formState,
+        onFormEvent = viewModel::onFormEvent,
+        onRegisterClick = navigateToSignUp
+    )
 }
 
 @Composable
-fun SignScreen() {
-
+fun SignScreen(
+    formState: SignInFormState,
+    onFormEvent: (SignInFormEvent) -> Unit,
+    onRegisterClick: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .background(brush = BackgroundGradient),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -46,62 +69,98 @@ fun SignScreen() {
             contentDescription = null
         )
 
-        Spacer(modifier = Modifier.height(64.dp))
-
-        var email by remember {
-            mutableStateOf("")
-        }
+        Spacer(modifier = Modifier.height(78.dp))
 
         PrimaryTextField(
-            value = email,
+            value = formState.email,
             onValueChange = {
-                email = it
+                onFormEvent(SignInFormEvent.EmailChanged(it))
             },
             placeholder = stringResource(R.string.feature_login_email),
             modifier = Modifier
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
             leadingIcon = R.drawable.ic_envelope,
             keyboardType = KeyboardType.Email,
+            errorMessage = formState.emailError?.let { stringResource(id = it) },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        var password by remember {
-            mutableStateOf("")
-        }
+        Spacer(modifier = Modifier.height(14.dp))
 
         PrimaryTextField(
-            value = password,
+            value = formState.password,
             onValueChange = {
-                password = it
+                onFormEvent(SignInFormEvent.PasswordChanged(it))
             },
             placeholder = stringResource(R.string.feature_login_password),
             modifier = Modifier
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
             leadingIcon = R.drawable.ic_lock,
             keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Done
+            imeAction = ImeAction.Done,
+            errorMessage = formState.passwordError?.let { stringResource(id = it) },
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        var isLoading by remember {
-            mutableStateOf(false)
-        }
+        Spacer(modifier = Modifier.height(98.dp))
 
         PrimaryButton(
             text = stringResource(R.string.feature_login_button),
-            modifier = Modifier.padding(horizontal = 16.dp),
+            modifier = Modifier.padding(horizontal = dimensionResource(R.dimen.spacing_medium)),
             onClick = {
-                isLoading = !isLoading
+                onFormEvent(SignInFormEvent.Submit)
             },
-            isLoading = isLoading
+            isLoading = formState.isLoading
         )
+
+        Spacer(modifier = Modifier.height(56.dp))
+
+        val noAccountText = stringResource(R.string.feature_login_no_account)
+        val registerText = stringResource(R.string.feature_login_register)
+
+        val noAccountRegisterText = "${noAccountText} ${registerText}"
+
+        val annotatedString = buildAnnotatedString {
+            val registerTextStartIndex = noAccountRegisterText.indexOf(registerText)
+            val registerTextEndIndex = registerTextStartIndex + registerText.length
+
+            append(noAccountRegisterText)
+
+            addStyle(
+                style = SpanStyle(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    textDecoration = null
+                ),
+                start = 0,
+                end = registerTextStartIndex
+            )
+
+            addLink(
+                clickable = LinkAnnotation.Clickable(
+                    tag = "register text.",
+                    styles = TextLinkStyles(
+                        style = SpanStyle(
+                            color = MaterialTheme.colorScheme.primary,
+                            textDecoration = TextDecoration.Underline
+                        )
+                    ),
+                    linkInteractionListener = {
+                        onRegisterClick()
+                    }
+                ),
+                start = registerTextStartIndex,
+                end = registerTextEndIndex
+            )
+        }
+
+        Text(annotatedString)
     }
 }
 
 @Preview
 @Composable
 private fun SignScreenPreview() {
-    SignScreen()
+    SignScreen(
+        formState = SignInFormState(),
+        onFormEvent = {},
+        onRegisterClick = {},
+    )
 }
