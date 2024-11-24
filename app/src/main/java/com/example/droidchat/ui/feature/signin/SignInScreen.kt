@@ -116,7 +116,7 @@ fun SignScreen(
         val noAccountText = stringResource(R.string.feature_login_no_account)
         val registerText = stringResource(R.string.feature_login_register)
 
-        val noAccountRegisterText = "${noAccountText} ${registerText}"
+        val noAccountRegisterText = "$noAccountText $registerText"
 
         val annotatedString = buildAnnotatedString {
             val registerTextStartIndex = noAccountRegisterText.indexOf(registerText)
