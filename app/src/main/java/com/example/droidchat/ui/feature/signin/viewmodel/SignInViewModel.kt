@@ -33,12 +33,16 @@ class SignInViewModel @Inject constructor() : ViewModel() {
         var isFormValid = true
         resetFormErrorState()
         if (formState.email.isBlank()) {
-            formState = formState.copy(emailError = R.string.error_message_email_invalid)
+            formState = formState.copy(
+                emailError = R.string.error_message_email_invalid
+            )
             isFormValid = false
         }
 
         if (formState.password.isBlank()) {
-            formState = formState.copy(passwordError = R.string.error_message_password_invalid)
+            formState = formState.copy(
+                passwordError = R.string.error_message_password_invalid
+            )
             isFormValid = false
         }
 
