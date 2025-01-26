@@ -71,8 +71,6 @@ fun ChatNavHost() {
                     direction = AnimatedContentTransitionScope.SlideDirection.Left,
                 )
             }
-        ) {
-
-        }
+        ) {}
     }
 }
