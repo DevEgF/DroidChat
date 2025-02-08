@@ -35,13 +35,13 @@ import com.example.droidchat.ui.theme.DroidChatTheme
 
 @Composable
 fun SecondaryTextField(
+    modifier: Modifier = Modifier,
     label: String,
     value: String,
     onValueChanged: (String) -> Unit,
     extraText: String?,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
-    modifier: Modifier = Modifier
 ) {
     var inputText by remember {
         mutableStateOf(value)
