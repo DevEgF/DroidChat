@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.droidchat.R
+import com.example.droidchat.ui.extensions.getVisualTransformationForPassword
 import com.example.droidchat.ui.theme.ColorError
 import com.example.droidchat.ui.theme.DroidChatTheme
 
@@ -81,9 +82,7 @@ fun PrimaryTextField(
                 imeAction = imeAction
             ),
             singleLine = true,
-            visualTransformation = if(keyboardType == KeyboardType.Password) {
-                if(passwordVisible) VisualTransformation.None else PasswordVisualTransformation()
-            } else VisualTransformation.None,
+            visualTransformation = keyboardType.getVisualTransformationForPassword(passwordVisible),
             shape = CircleShape,
             colors = OutlinedTextFieldDefaults.colors(
                 unfocusedContainerColor = MaterialTheme.colorScheme.onPrimary,
