@@ -10,14 +10,15 @@ import androidx.navigation.navOptions
 import com.example.droidchat.navigation.extension.slideInTo
 import com.example.droidchat.navigation.extension.slideOutTo
 import com.example.droidchat.ui.feature.signin.SignInRoute
+import com.example.droidchat.ui.feature.signup.SignUpRouteRoute
 import com.example.droidchat.ui.feature.splash.SplashRoute
 
 @Composable
 fun ChatNavHost() {
     val navController = rememberNavController()
 
-    NavHost(navController, startDestination = SplashRoute) {
-        composable<SplashRoute>(
+    NavHost(navController, startDestination = Route.SplashRoute) {
+        composable<Route.SplashRoute>(
             enterTransition =  {
                 this.slideInTo(
                     direction = AnimatedContentTransitionScope.SlideDirection.Right,
@@ -32,9 +33,9 @@ fun ChatNavHost() {
             SplashRoute(
                 onNavigateToSignIn = {
                     navController.navigate(
-                        route = SignInRoute,
+                        route = Route.SignInRoute,
                         navOptions = navOptions {
-                            popUpTo(SplashRoute){
+                            popUpTo(Route.SplashRoute){
                                 inclusive = true
                             }
                         }
@@ -42,7 +43,7 @@ fun ChatNavHost() {
                 }
             )
         }
-        composable<SignInRoute>(
+        composable<Route.SignInRoute>(
             enterTransition =  {
                 this.slideInTo(
                     direction = AnimatedContentTransitionScope.SlideDirection.Right,
@@ -56,11 +57,11 @@ fun ChatNavHost() {
         ) {
             SignInRoute(
                 navigateToSignUp = {
-                    navController.navigate(SignUpRoute)
+                    navController.navigate(Route.SignUpRoute)
                 }
             )
         }
-        composable<SignUpRoute>(
+        composable<Route.SignUpRoute>(
             enterTransition =  {
                 this.slideInTo(
                     direction = AnimatedContentTransitionScope.SlideDirection.Left,
@@ -68,9 +69,11 @@ fun ChatNavHost() {
             },
             exitTransition = {
                 this.slideOutTo(
-                    direction = AnimatedContentTransitionScope.SlideDirection.Left,
+                    direction = AnimatedContentTransitionScope.SlideDirection.Right,
                 )
             }
-        ) {}
+        ) {
+            SignUpRouteRoute()
+        }
     }
 }

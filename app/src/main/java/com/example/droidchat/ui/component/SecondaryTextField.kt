@@ -41,7 +41,7 @@ fun SecondaryTextField(
     label: String,
     value: String,
     onValueChanged: (String) -> Unit,
-    extraText: String?,
+    extraText: String? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
 ) {
@@ -82,7 +82,10 @@ fun SecondaryTextField(
             color = MaterialTheme.colorScheme.surface
         ) {
             Row(
-                modifier = Modifier.bottomBorder(Color.Blue, 2.dp),
+                modifier = Modifier.bottomBorder(
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    strokeWidth = 1.dp
+                ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Column(

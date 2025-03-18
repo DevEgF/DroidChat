@@ -2,11 +2,13 @@ package com.example.droidchat.navigation
 
 import kotlinx.serialization.Serializable
 
-@Serializable
-object SplashRoute
+sealed interface Route {
+    @Serializable
+    object SplashRoute
 
-@Serializable
-object SignInRoute
+    @Serializable
+    object SignInRoute
 
-@Serializable
-object SignUpRoute
+    @Serializable
+    object SignUpRoute
+}
