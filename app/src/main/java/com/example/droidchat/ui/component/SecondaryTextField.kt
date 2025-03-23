@@ -1,5 +1,6 @@
 package com.example.droidchat.ui.component
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +24,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
@@ -41,7 +43,8 @@ fun SecondaryTextField(
     label: String,
     value: String,
     onValueChanged: (String) -> Unit,
-    extraText: String? = null,
+    @StringRes
+    extraText: Int? = null,
     keyboardType: KeyboardType = KeyboardType.Text,
     imeAction: ImeAction = ImeAction.Next,
 ) {
@@ -111,7 +114,7 @@ fun SecondaryTextField(
                         }
                         extraText?.let {
                             Text(
-                                text = extraText,
+                                text = stringResource(id= extraText),
                                 modifier = Modifier.padding(4.dp),
                                 color = ColorSuccess,
                                 style = MaterialTheme.typography.bodySmall,
@@ -153,22 +156,7 @@ private fun SecondaryTextFieldPreview() {
             label = "E-mail",
             value = "",
             onValueChanged = {},
-            extraText = "",
             keyboardType = KeyboardType.Email,
-        )
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SecondaryTextFieldPasswordPreview() {
-    DroidChatTheme {
-        SecondaryTextField(
-            label = "Password",
-            value = "",
-            onValueChanged = {},
-            extraText = "Password matches",
-            keyboardType = KeyboardType.Password,
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.example.droidchat.ui.feature.signup
 
-import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CornerSize
@@ -18,11 +18,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -31,23 +27,40 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.droidchat.R
 import com.example.droidchat.ui.component.PrimaryButton
 import com.example.droidchat.ui.component.ProfilePictureOptionsModalBottomSheet
 import com.example.droidchat.ui.component.ProfilePictureSelector
 import com.example.droidchat.ui.component.SecondaryTextField
+import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
+import com.example.droidchat.ui.feature.signup.state.SignUpFormState
+import com.example.droidchat.ui.feature.signup.viewmodel.SignUpViewModel
 import com.example.droidchat.ui.theme.BackgroundGradient
 import com.example.droidchat.ui.theme.DroidChatTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun SignUpRouteRoute() {
-    SignUpRouteScreen()
+fun SignUpRouteRoute(
+    viewModel: SignUpViewModel = viewModel()
+) {
+    val formState = viewModel.formState
+
+    SignUpRouteScreen(
+        formState = formState,
+        onFormEvent = viewModel::onFormEvent
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignUpRouteScreen() {
+fun SignUpRouteScreen(
+    formState: SignUpFormState,
+    onFormEvent: (SignUpFormEvent) -> Unit
+) {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+
     Box(
         modifier = Modifier
             .background(brush = BackgroundGradient)
@@ -59,15 +72,6 @@ fun SignUpRouteScreen() {
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Spacer(Modifier.height(56.dp))
-
-            var profilePictureSelectedUri by remember {
-                mutableStateOf<Uri?>(null)
-            }
-
-            var openProfilePictureOptionsModelBottomSheet by remember {
-                mutableStateOf(false)
-            }
-
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = null
@@ -82,67 +86,68 @@ fun SignUpRouteScreen() {
                 color = MaterialTheme.colorScheme.surface
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .imePadding(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     ProfilePictureSelector(
-                        imageUri = profilePictureSelectedUri,
+                        imageUri = formState.profilePictureUri,
                         modifier = Modifier.clickable {
-                            openProfilePictureOptionsModelBottomSheet = true
+                            onFormEvent(SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet)
                         }
                     )
                     Spacer(Modifier.height(30.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_first_name),
-                        value = "",
-                        onValueChanged = {},
+                        value = formState.firstName,
+                        onValueChanged = { onFormEvent(SignUpFormEvent.FirstNameChanged(it)) },
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_last_name),
-                        value = "",
-                        onValueChanged = {},
+                        value = formState.lastName,
+                        onValueChanged = { onFormEvent(SignUpFormEvent.LastNameChanged(it)) },
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_email),
-                        value = "",
-                        onValueChanged = {},
+                        value = formState.email,
+                        onValueChanged = { onFormEvent(SignUpFormEvent.EmailChanged(it)) },
                         keyboardType = KeyboardType.Email
                     )
                     Spacer(Modifier.height(22.dp))
+
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_password),
-                        value = "",
-                        onValueChanged = {},
-                        keyboardType = KeyboardType.Password
+                        value = formState.password,
+                        onValueChanged = { onFormEvent(SignUpFormEvent.PasswordChanged(it)) },
+                        keyboardType = KeyboardType.Password,
+                        extraText = formState.passwordsMatchText
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_password_confirmation),
-                        value = "",
-                        onValueChanged = {},
+                        value = formState.passwordConfirmation,
+                        onValueChanged = { onFormEvent(SignUpFormEvent.PasswordConfirmation(it)) },
                         keyboardType = KeyboardType.Password,
-                        imeAction = ImeAction.Done
+                        imeAction = ImeAction.Done,
+                        extraText = formState.passwordsMatchText
                     )
                     Spacer(Modifier.height(36.dp))
                     PrimaryButton(
                         text = stringResource(R.string.feature_sign_up_button),
-                        onClick = {}
+                        onClick = { onFormEvent(SignUpFormEvent.Submit) }
                     )
                 }
             }
-
-            val sheetState = rememberModalBottomSheetState()
-            val scope = rememberCoroutineScope()
-
-            if (openProfilePictureOptionsModelBottomSheet) {
+            if (formState.isProfilePictureModalBottomSheetOpen) {
                 ProfilePictureOptionsModalBottomSheet(
                     onDismissRequest = {
-                        openProfilePictureOptionsModelBottomSheet = false
+                        onFormEvent(SignUpFormEvent.CloseProfilePictureOptionsModalBottomSheet)
                     },
                     onPictureSelected = { uri ->
-                        profilePictureSelectedUri = uri
+                        onFormEvent(SignUpFormEvent.ProfilePhotoUriChanged(uri))
 
                         scope.launch {
                             sheetState.hide()
@@ -159,6 +164,9 @@ fun SignUpRouteScreen() {
 @Composable
 private fun SignUpRouteScreenPreview() {
     DroidChatTheme {
-        SignUpRouteScreen()
+        SignUpRouteScreen(
+            formState = SignUpFormState(),
+            onFormEvent = {}
+        )
     }
 }
