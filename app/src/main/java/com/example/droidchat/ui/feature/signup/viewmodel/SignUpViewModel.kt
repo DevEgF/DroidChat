@@ -5,10 +5,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.droidchat.R
+import com.example.droidchat.featurecore.validator.FormValidator
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
 
-class SignUpViewModel : ViewModel() {
+class SignUpViewModel (
+    private val formValidator: FormValidator<SignUpFormState>
+) : ViewModel() {
 
     var formState by mutableStateOf(SignUpFormState())
         private set
@@ -63,14 +66,8 @@ class SignUpViewModel : ViewModel() {
                 formState = formState.copy(isProfilePictureModalBottomSheetOpen = false)
             }
 
-            SignUpFormEvent.Submit -> {
-
-            }
+            SignUpFormEvent.Submit -> doSignUp()
         }
-    }
-
-    private fun isValidForm(): Boolean {
-        return false
     }
 
     private fun doSignUp() {
@@ -80,10 +77,13 @@ class SignUpViewModel : ViewModel() {
         }
     }
 
-    private fun updatePasswordState(
-        password: String = formState.password,
-        confirmation: String = formState.passwordConfirmation
-    ): Int? {
+    private fun isValidForm(): Boolean {
+        return !formValidator.validate(formState).also {
+            formState = it
+        }.hasError
+    }
+
+    private fun updatePasswordState(password: String, confirmation: String): Int? {
         return if (password.isNotEmpty() && password == confirmation) {
             R.string.feature_sign_up_passwords_match
         } else {

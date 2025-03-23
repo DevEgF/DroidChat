@@ -35,6 +35,7 @@ import com.example.droidchat.ui.component.ProfilePictureSelector
 import com.example.droidchat.ui.component.SecondaryTextField
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
+import com.example.droidchat.ui.feature.signup.viewmodel.SignUpFormValidator
 import com.example.droidchat.ui.feature.signup.viewmodel.SignUpViewModel
 import com.example.droidchat.ui.theme.BackgroundGradient
 import com.example.droidchat.ui.theme.DroidChatTheme
@@ -42,7 +43,9 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun SignUpRouteRoute(
-    viewModel: SignUpViewModel = viewModel()
+    viewModel: SignUpViewModel = viewModel {
+        SignUpViewModel(SignUpFormValidator())
+    }
 ) {
     val formState = viewModel.formState
 
@@ -102,19 +105,32 @@ fun SignUpRouteScreen(
                         label = stringResource(R.string.feature_sign_up_first_name),
                         value = formState.firstName,
                         onValueChanged = { onFormEvent(SignUpFormEvent.FirstNameChanged(it)) },
+                        errorText = formState.firstNameError?.let {
+                            stringResource(
+                                id = it,
+                                stringResource(id = R.string.feature_sign_up_first_name)
+                            )
+                        },
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_last_name),
                         value = formState.lastName,
                         onValueChanged = { onFormEvent(SignUpFormEvent.LastNameChanged(it)) },
+                        errorText = formState.lastNameError?.let {
+                            stringResource(
+                                it,
+                                stringResource(id = R.string.feature_sign_up_last_name)
+                            )
+                        },
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
                         label = stringResource(R.string.feature_sign_up_email),
                         value = formState.email,
                         onValueChanged = { onFormEvent(SignUpFormEvent.EmailChanged(it)) },
-                        keyboardType = KeyboardType.Email
+                        keyboardType = KeyboardType.Email,
+                        errorText = formState.emailError?.let { stringResource(it) },
                     )
                     Spacer(Modifier.height(22.dp))
 
@@ -123,7 +139,8 @@ fun SignUpRouteScreen(
                         value = formState.password,
                         onValueChanged = { onFormEvent(SignUpFormEvent.PasswordChanged(it)) },
                         keyboardType = KeyboardType.Password,
-                        extraText = formState.passwordsMatchText
+                        extraText = formState.passwordsMatchText,
+                        errorText = formState.passwordError?.let { stringResource(it) },
                     )
                     Spacer(Modifier.height(22.dp))
                     SecondaryTextField(
@@ -132,7 +149,8 @@ fun SignUpRouteScreen(
                         onValueChanged = { onFormEvent(SignUpFormEvent.PasswordConfirmation(it)) },
                         keyboardType = KeyboardType.Password,
                         imeAction = ImeAction.Done,
-                        extraText = formState.passwordsMatchText
+                        extraText = formState.passwordsMatchText,
+                        errorText = formState.passwordConfirmationError?.let { stringResource(it) },
                     )
                     Spacer(Modifier.height(36.dp))
                     PrimaryButton(
