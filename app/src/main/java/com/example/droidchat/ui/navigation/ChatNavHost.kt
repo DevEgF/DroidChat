@@ -1,4 +1,4 @@
-package com.example.droidchat.navigation
+package com.example.droidchat.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.core.tween
@@ -7,8 +7,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navOptions
-import com.example.droidchat.navigation.extension.slideInTo
-import com.example.droidchat.navigation.extension.slideOutTo
+import com.example.droidchat.ui.navigation.extension.slideInTo
+import com.example.droidchat.ui.navigation.extension.slideOutTo
 import com.example.droidchat.ui.feature.signin.SignInRoute
 import com.example.droidchat.ui.feature.signup.SignUpRouteRoute
 import com.example.droidchat.ui.feature.splash.SplashRoute

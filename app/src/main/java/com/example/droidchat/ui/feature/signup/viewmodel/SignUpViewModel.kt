@@ -5,7 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.droidchat.R
-import com.example.droidchat.featurecore.validator.FormValidator
+import com.example.droidchat.ui.feature.validator.FormValidator
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
 

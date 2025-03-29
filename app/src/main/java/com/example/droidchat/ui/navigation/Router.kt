@@ -1,4 +1,4 @@
-package com.example.droidchat.navigation
+package com.example.droidchat.ui.navigation
 
 import kotlinx.serialization.Serializable
 

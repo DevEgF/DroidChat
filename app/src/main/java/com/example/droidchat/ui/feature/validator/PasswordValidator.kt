@@ -1,4 +1,4 @@
-package com.example.droidchat.featurecore.validator
+package com.example.droidchat.ui.feature.validator
 
 object PasswordValidator {
     fun isValid(value: String): Boolean {

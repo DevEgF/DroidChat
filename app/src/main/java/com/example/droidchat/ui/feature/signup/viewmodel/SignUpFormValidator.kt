@@ -1,9 +1,9 @@
 package com.example.droidchat.ui.feature.signup.viewmodel
 
 import com.example.droidchat.R
-import com.example.droidchat.featurecore.validator.EmailValidator
-import com.example.droidchat.featurecore.validator.FormValidator
-import com.example.droidchat.featurecore.validator.PasswordValidator
+import com.example.droidchat.ui.feature.validator.EmailValidator
+import com.example.droidchat.ui.feature.validator.FormValidator
+import com.example.droidchat.ui.feature.validator.PasswordValidator
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
 
 class SignUpFormValidator: FormValidator<SignUpFormState> {

@@ -1,4 +1,4 @@
-package com.example.droidchat.navigation.extension
+package com.example.droidchat.ui.navigation.extension
 
 import androidx.compose.animation.AnimatedContentTransitionScope
 import androidx.compose.animation.EnterTransition
