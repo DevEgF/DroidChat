@@ -1,6 +1,5 @@
 package com.example.droidchat.ui.feature.signin
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +27,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.droidchat.R
 import com.example.droidchat.ui.component.PrimaryButton
 import com.example.droidchat.ui.component.PrimaryTextField
@@ -39,7 +38,7 @@ import com.example.droidchat.ui.theme.BackgroundGradient
 
 @Composable
 fun SignInRoute(
-    viewModel: SignInViewModel = viewModel(),
+    viewModel: SignInViewModel = hiltViewModel(),
     navigateToSignUp: () -> Unit
 ) {
     val formState = viewModel.formState

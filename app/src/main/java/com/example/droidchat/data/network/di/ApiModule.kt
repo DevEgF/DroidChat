@@ -1,4 +1,4 @@
-package com.example.droidchat.data.di
+package com.example.droidchat.data.network.di
 
 import dagger.Module
 import dagger.Provides
