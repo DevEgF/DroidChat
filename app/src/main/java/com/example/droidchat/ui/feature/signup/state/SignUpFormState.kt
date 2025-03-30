@@ -24,5 +24,7 @@ data class SignUpFormState(
     val passwordsMatchText: Int? = null,
     val isProfilePictureModalBottomSheetOpen: Boolean = false,
     val hasError: Boolean = false,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isSignedUp: Boolean = false,
+    val apiErrorMessageResId: Int? = null
 )

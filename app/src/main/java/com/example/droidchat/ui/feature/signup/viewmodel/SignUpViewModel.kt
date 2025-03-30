@@ -3,10 +3,12 @@ package com.example.droidchat.ui.feature.signup.viewmodel
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.droidchat.R
 import com.example.droidchat.domain.model.CreateAccount
+import com.example.droidchat.domain.model.exceptions.NetworkException
 import com.example.droidchat.domain.repository.AuthRepository
 import com.example.droidchat.ui.feature.validator.FormValidator
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
@@ -75,6 +77,10 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    fun errorMessageShow() {
+        formState = formState.copy(apiErrorMessageResId = null)
+    }
+
     private fun doSignUp() {
         if (isValidForm()) {
             formState = formState.copy(isLoading = true)
@@ -88,9 +94,21 @@ class SignUpViewModel @Inject constructor(
                         profilePictureId = null,
                     )
                 ).fold(onSuccess = {
-                    formState = formState.copy(isLoading = false)
+                    formState = formState.copy(
+                        isLoading = false,
+                        isSignedUp = true
+                    )
                 }, onFailure = {
-                    formState = formState.copy(isLoading = false)
+                    formState = formState.copy(
+                        isLoading = false,
+                        apiErrorMessageResId = if (it is NetworkException.ApiException) {
+                            when (it.statusCode) {
+                                400 -> R.string.error_message_api_form_validation_failed
+                                409 -> R.string.error_message_user_with_username_already_exists
+                                else -> R.string.common_generic_error_title
+                            }
+                        } else R.string.common_generic_error_title
+                    )
                 })
             }
         }

@@ -34,5 +34,6 @@
     <string name="feature_sign_up_login_here">Fazer login</string>
 
     <string name="splash_safety_info">Mensagens seguras, criptografadas e privadas</string>
+    <string name="error_message_api_form_validation_failed">Erro de validação de formulário, confira os dados e tente novamente</string>
 
 </resources>
