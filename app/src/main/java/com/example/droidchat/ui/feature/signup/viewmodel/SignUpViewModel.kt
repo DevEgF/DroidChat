@@ -4,13 +4,21 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.droidchat.R
+import com.example.droidchat.domain.model.CreateAccount
+import com.example.droidchat.domain.repository.AuthRepository
 import com.example.droidchat.ui.feature.validator.FormValidator
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class SignUpViewModel (
-    private val formValidator: FormValidator<SignUpFormState>
+@HiltViewModel
+class SignUpViewModel @Inject constructor(
+    private val formValidator: FormValidator<SignUpFormState>,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     var formState by mutableStateOf(SignUpFormState())
@@ -36,20 +44,17 @@ class SignUpViewModel (
 
             is SignUpFormEvent.PasswordChanged -> {
                 val matchText = updatePasswordState(
-                    password = event.password,
-                    confirmation = formState.passwordConfirmation
+                    password = event.password, confirmation = formState.passwordConfirmation
                 )
 
                 formState = formState.copy(
-                    password = event.password,
-                    passwordsMatchText = matchText
+                    password = event.password, passwordsMatchText = matchText
                 )
             }
 
             is SignUpFormEvent.PasswordConfirmation -> {
                 val matchText = updatePasswordState(
-                    password = formState.password,
-                    confirmation = event.passwordConfirmation
+                    password = formState.password, confirmation = event.passwordConfirmation
                 )
 
                 formState = formState.copy(
@@ -73,7 +78,21 @@ class SignUpViewModel (
     private fun doSignUp() {
         if (isValidForm()) {
             formState = formState.copy(isLoading = true)
-            // Request API
+            viewModelScope.launch {
+                authRepository.signUp(
+                    createAccount = CreateAccount(
+                        username = formState.email,
+                        password = formState.password,
+                        firstName = formState.firstName,
+                        lastName = formState.lastName,
+                        profilePictureId = null,
+                    )
+                ).fold(onSuccess = {
+                    formState = formState.copy(isLoading = false)
+                }, onFailure = {
+                    formState = formState.copy(isLoading = false)
+                })
+            }
         }
     }
 

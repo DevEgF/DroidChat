@@ -5,8 +5,9 @@ import com.example.droidchat.ui.feature.validator.EmailValidator
 import com.example.droidchat.ui.feature.validator.FormValidator
 import com.example.droidchat.ui.feature.validator.PasswordValidator
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
+import javax.inject.Inject
 
-class SignUpFormValidator: FormValidator<SignUpFormState> {
+class SignUpFormValidator @Inject constructor(): FormValidator<SignUpFormState> {
 
     override fun validate(formState: SignUpFormState): SignUpFormState {
         val isFirstNameValid = formState.firstName.isNotEmpty()

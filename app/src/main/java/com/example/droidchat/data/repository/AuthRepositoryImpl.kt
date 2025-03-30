@@ -10,8 +10,10 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val networkDataSource: NetworkDataSource,
 ): AuthRepository {
-    override suspend fun signUp(createAccount: CreateAccount) {
-        networkDataSource.signUp(createAccount.toCreateAccountRequest())
+    override suspend fun signUp(createAccount: CreateAccount): Result<Unit> {
+        return runCatching {
+            networkDataSource.signUp(createAccount.toCreateAccountRequest())
+        }
     }
 
     override suspend fun signIn(userName: String, password: String) {
