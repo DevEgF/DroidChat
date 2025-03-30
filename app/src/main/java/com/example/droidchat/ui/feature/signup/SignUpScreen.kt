@@ -129,7 +129,8 @@ fun SignUpRouteScreen(
                         imageUri = formState.profilePictureUri,
                         modifier = Modifier.clickable {
                             onFormEvent(SignUpFormEvent.OpenProfilePictureOptionsModalBottomSheet)
-                        }
+                        },
+                        isCompressedImage = formState.isCompressingImage
                     )
                     Spacer(Modifier.height(30.dp))
                     SecondaryTextField(

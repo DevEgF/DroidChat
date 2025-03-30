@@ -1,12 +1,16 @@
 package com.example.droidchat.ui.feature.signup.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.droidchat.R
+import com.example.droidchat.core.image.ImageCompressor
+import com.example.droidchat.core.image.ImageCompressorImpl
 import com.example.droidchat.domain.model.CreateAccount
 import com.example.droidchat.domain.model.exceptions.NetworkException
 import com.example.droidchat.domain.repository.AuthRepository
@@ -14,13 +18,15 @@ import com.example.droidchat.ui.feature.validator.FormValidator
 import com.example.droidchat.ui.feature.signup.event.SignUpFormEvent
 import com.example.droidchat.ui.feature.signup.state.SignUpFormState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val formValidator: FormValidator<SignUpFormState>,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val imageCompressor: ImageCompressor,
 ) : ViewModel() {
 
     var formState by mutableStateOf(SignUpFormState())
@@ -30,6 +36,9 @@ class SignUpViewModel @Inject constructor(
         when (event) {
             is SignUpFormEvent.ProfilePhotoUriChanged -> {
                 formState = formState.copy(profilePictureUri = event.uri)
+                event.uri?.let {
+                    compressImageAndUpdateState(it)
+                }
             }
 
             is SignUpFormEvent.FirstNameChanged -> {
@@ -79,6 +88,20 @@ class SignUpViewModel @Inject constructor(
 
     fun errorMessageShow() {
         formState = formState.copy(apiErrorMessageResId = null)
+    }
+
+    private fun compressImageAndUpdateState(uri: Uri) {
+        viewModelScope.launch {
+            try {
+                formState = formState.copy(isCompressingImage = true)
+                val compressedFile = imageCompressor.compressAndResizeImage(uri)
+                formState = formState.copy(profilePictureUri = compressedFile.toUri())
+            } catch (e: Exception) {
+                e.printStackTrace()
+            } finally {
+                formState = formState.copy(isCompressingImage = false)
+            }
+        }
     }
 
     private fun doSignUp() {
