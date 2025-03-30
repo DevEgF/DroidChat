@@ -1,4 +1,4 @@
-package com.example.droidchat.data.repository
+package com.example.droidchat.domain.repository
 
 import com.example.droidchat.domain.model.CreateAccount
 

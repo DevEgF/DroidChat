@@ -1,4 +1,4 @@
-package com.example.droidchat.data.network
+package com.example.droidchat.data.network.datasource
 
 import com.example.droidchat.data.network.model.AuthRequest
 import com.example.droidchat.data.network.model.CreateAccountRequest

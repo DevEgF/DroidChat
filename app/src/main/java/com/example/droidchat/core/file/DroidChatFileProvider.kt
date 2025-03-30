@@ -1,8 +1,9 @@
-package com.example.droidchat
+package com.example.droidchat.core.file
 
 import android.content.Context
 import android.net.Uri
 import androidx.core.content.FileProvider
+import com.example.droidchat.R
 import java.io.File
 
 class DroidChatFileProvider : FileProvider(R.xml.file_patchs) {

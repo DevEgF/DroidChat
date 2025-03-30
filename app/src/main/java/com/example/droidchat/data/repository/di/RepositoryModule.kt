@@ -1,6 +1,6 @@
 package com.example.droidchat.data.repository.di
 
-import com.example.droidchat.data.repository.AuthRepository
+import com.example.droidchat.domain.repository.AuthRepository
 import com.example.droidchat.data.repository.AuthRepositoryImpl
 import dagger.Binds
 import dagger.Module
