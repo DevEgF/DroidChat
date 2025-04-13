@@ -3,6 +3,7 @@ package com.example.droidchat.core.image
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -11,6 +12,7 @@ import java.io.File
 import java.io.FileOutputStream
 import java.io.InputStream
 import androidx.core.graphics.scale
+import androidx.exifinterface.media.ExifInterface
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -35,7 +37,9 @@ class ImageCompressorImpl @Inject constructor(
     ): File = withContext(Dispatchers.IO) {
         delay(3000)
         val originalBitmap = uriToBitmap(context, imageUri)
-            ?: throw IllegalArgumentException("Imagem não encontrada")
+            ?.let { bitmap ->
+                adjustBitmapOrientation(context, imageUri, bitmap)
+            } ?: throw IllegalArgumentException("Imagem não encontrada")
 
         val resizedBitmap = if (originalBitmap.width > maxWidth || originalBitmap.height > maxHeight) {
             resizeBitmap(originalBitmap, maxWidth, maxHeight)
@@ -82,5 +86,34 @@ class ImageCompressorImpl @Inject constructor(
         val width = if (aspectRatio > 1) maxWidth else (maxHeight * aspectRatio).toInt()
         val height = if (aspectRatio > 1) (maxWidth / aspectRatio).toInt() else maxHeight
         return bitmap.scale(width, height)
+    }
+
+    /**
+     * Ajsuta a orientação do Bitmap com base nos metadados EXIF.
+     *
+     * @param context Contexto para acessar os dados do Uri.
+     * @param imageUri Uri da imagem.
+     * @param bitmap Bitmap originak.
+     * @return Bitmap com a orientação corrigida.
+     */
+    private fun adjustBitmapOrientation(context: Context, imageUri: Uri, bitmap: Bitmap): Bitmap {
+        val inputStream = context.contentResolver.openInputStream(imageUri)
+        val exif = inputStream?.use { ExifInterface(it) }
+        val orientation = exif?.getAttributeInt(
+            ExifInterface.TAG_ORIENTATION,
+            ExifInterface.ORIENTATION_NORMAL,
+        ) ?: ExifInterface.ORIENTATION_NORMAL
+
+        val matrix = Matrix()
+
+        when(orientation) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> matrix.postRotate(90f)
+            ExifInterface.ORIENTATION_ROTATE_180 -> matrix.postRotate(180f)
+            ExifInterface.ORIENTATION_ROTATE_270 -> matrix.postRotate(270f)
+            ExifInterface.ORIENTATION_FLIP_HORIZONTAL -> matrix.postScale(-1f, 1f)
+            ExifInterface.ORIENTATION_FLIP_VERTICAL -> matrix.postScale(1f, -1f)
+        }
+
+        return Bitmap.createBitmap(bitmap, 0, 0 ,bitmap.width, bitmap.height, matrix, true)
     }
 }
