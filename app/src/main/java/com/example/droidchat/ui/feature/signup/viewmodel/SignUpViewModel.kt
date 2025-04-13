@@ -5,6 +5,7 @@ import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -108,13 +109,35 @@ class SignUpViewModel @Inject constructor(
         if (isValidForm()) {
             formState = formState.copy(isLoading = true)
             viewModelScope.launch {
+                var profilePictureId: Int? = null
+
+                var errorWhenUploadingProfilePicture = false
+
+                formState.profilePictureUri?.path?.let { path ->
+                    authRepository.uploadProfilePicture(path).fold(
+                        onSuccess = { image ->
+                            profilePictureId = image.id
+                        },
+                        onFailure = {
+                            formState = formState.copy(
+                                isLoading = false,
+                                profilePictureUri = null,
+                                apiErrorMessageResId = R.string.error_message_profile_picture_uploading_failed
+                            )
+                            errorWhenUploadingProfilePicture = true
+                        }
+                    )
+                }
+
+                if (errorWhenUploadingProfilePicture) return@launch
+                
                 authRepository.signUp(
                     createAccount = CreateAccount(
                         username = formState.email,
                         password = formState.password,
                         firstName = formState.firstName,
                         lastName = formState.lastName,
-                        profilePictureId = null,
+                        profilePictureId = profilePictureId,
                     )
                 ).fold(onSuccess = {
                     formState = formState.copy(
@@ -130,7 +153,7 @@ class SignUpViewModel @Inject constructor(
                                 409 -> R.string.error_message_user_with_username_already_exists
                                 else -> R.string.common_generic_error_title
                             }
-                        } else R.string.common_generic_error_title
+                        } else R.string.common_generic_error_message
                     )
                 })
             }
