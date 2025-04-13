@@ -58,6 +58,9 @@ fun ChatNavHost() {
             SignInRoute(
                 navigateToSignUp = {
                     navController.navigate(Route.SignUpRoute)
+                },
+                navigateToMain = {
+
                 }
             )
         }

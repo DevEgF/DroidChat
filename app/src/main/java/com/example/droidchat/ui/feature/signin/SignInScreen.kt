@@ -1,5 +1,6 @@
 package com.example.droidchat.ui.feature.signin
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -13,8 +14,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -31,17 +34,45 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.droidchat.R
 import com.example.droidchat.ui.component.PrimaryButton
 import com.example.droidchat.ui.component.PrimaryTextField
+import com.example.droidchat.ui.feature.signin.action.SignInActions
 import com.example.droidchat.ui.feature.signin.event.SignInFormEvent
 import com.example.droidchat.ui.feature.signin.state.SignInFormState
 import com.example.droidchat.ui.feature.signin.viewmodel.SignInViewModel
 import com.example.droidchat.ui.theme.BackgroundGradient
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun SignInRoute(
     viewModel: SignInViewModel = hiltViewModel(),
-    navigateToSignUp: () -> Unit
+    navigateToSignUp: () -> Unit,
+    navigateToMain: () -> Unit,
 ) {
     val formState = viewModel.formState
+
+    val context = LocalContext.current
+
+    LaunchedEffect(true) {
+        viewModel.signInActions.collectLatest { actions ->
+            when (actions) {
+                SignInActions.Success -> navigateToMain()
+
+                SignInActions.Error.GenericError ->
+                    Toast.makeText(
+                        context,
+                        R.string.common_generic_error_message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+
+                SignInActions.Error.UnauthorizedError ->
+                    Toast.makeText(
+                        context,
+                        "Unauthorized Error",
+                        Toast.LENGTH_SHORT
+                    ).show()
+            }
+        }
+    }
+
     SignScreen(
         formState = formState,
         onFormEvent = viewModel::onFormEvent,
